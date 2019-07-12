@@ -19,9 +19,13 @@ class TrainingRecord extends Model
         'training_time'
     ];
 
-    public function getByUserId($id)
+    public function getMyRecord($id, $input)
     {
-        return $this->where('user_id', $id)->get();
+        if (empty($input)) {
+            return $this->orderBy('training_time', 'desc')->where('user_id', $id)->get();
+        } else {
+            return $this->where('user_id', $id)->where('training_time', 'LIKE', "%{$input}%")->get();
+        }
     }
 
     public function select()

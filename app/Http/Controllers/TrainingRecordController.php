@@ -12,12 +12,14 @@ class TrainingRecordController extends Controller
 {
     protected $record;
     protected $select;
+    protected $user;
 
-    public function __construct(TrainingRecord $record, TrainingSelect $select)
+    public function __construct(TrainingRecord $record, TrainingSelect $select, User $user)
     {
         $this->middleware('auth');
         $this->record = $record;
         $this->select = $select;
+        $this->user   = $user;
     }
 
     /**
@@ -27,13 +29,13 @@ class TrainingRecordController extends Controller
      */
     public function index(Request $request)
     {
-        $input = $request->get('training_time');
+        $input = $request->get('name');
         if (empty($input)) {
-            $records = $this->record->orderBy('training_time', 'desc')->get();
+            $users = $this->user->all();
         } else {
-            $records = $this->record->where('training_time', 'LIKE', "%{$input}%")->get();
+            $users = $this->user->where('name', 'LIKE', "%{$input}%")->get();
         }
-        return view('training_record.index', compact('records'));
+        return view('training_record.index', compact('users'));
     }
 
     /**
@@ -117,10 +119,12 @@ class TrainingRecordController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function myPage($id)
+    public function myPage(Request $request, $id)
     {
-        $records = $this->record->getByUserId($id);
-        return view('training_record.mypage', compact('records'));
+        $input = $request->get('training_time');
+        $records = $this->record->getMyRecord($id, $input);
+        $user = $this->user->find($id);
+        return view('training_record.mypage', compact('records', 'user'));
     }
 
     /**
@@ -128,9 +132,22 @@ class TrainingRecordController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function detail()
-    {
-        $records = $this->record->getByUserId(Auth::id());
-        return view('training_record.detail', compact('records'));
-    }
+    // public function otherPage(Request $request, $id)
+    // {
+    //     $input = $request->get('training_time');
+    //     $records = $this->record->getMyRecord($id, $input);
+    //     $user = $this->user->find($id);
+    //     return view('training_record.otherpage', compact('records', 'user'));
+    // }
+
+    /**
+     * Display the specified resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    // public function detail()
+    // {
+    //     $records = $this->record->getByUserId(Auth::id());
+    //     return view('training_record.detail', compact('records'));
+    // }
 }
