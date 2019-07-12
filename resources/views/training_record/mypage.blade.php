@@ -1,9 +1,8 @@
 @extends ('layouts.app')
 @section ('content')
 
-<h1 class="page-header">みんなのトレーニングログ</h1>
+<h1 class="page-header">{{ Auth::user()->name }}トレーニングログ</h1>
 <p class="text-right">
-  <a class="btn btn-success" href="{{ route('training_record.mypage', Auth::id()) }}">マイページ</a>
   <a class="btn btn-success" href="/training_record/create">トレーニング追加</a>
 </p>
 <div class="form-group">
@@ -15,7 +14,6 @@
 <table class="table">
   <thead class="thead-light">
     <tr>
-      <th>ユーザー名</th>
       <th>日付</th>
       <th>種目</th>
       <th>重量</th>
@@ -29,13 +27,18 @@
   <tbody>
     @foreach ($records as $record)
       <tr>
-        <td class="align-middle">{{ $record->user->name }}</td>
         <td class="align-middle">{{ $record->training_time }}</td>
         <td class="align-middle">{{ $record->select->name }}</td>
         <td class="align-middle">{{ $record->weight }}</td>
         <td class="align-middle">{{ $record->rep }}</td>
         <td class="align-middle">{{ $record->set }}</td>
         <td class="align-middle">{{ $record->interval }}</td>
+        <td><a class="btn btn-primary" href="{{ route('training_record.edit', $record->id )}}">編集</a></td>
+        <td>
+          {!! Form::open(['route' => ['training_record.destroy', $record->id], 'method' => 'DELETE']) !!}
+            {!! Form::submit('削除', ['class' => 'btn btn-danger']) !!}
+          {!! Form::close() !!}
+        </td>
       </tr>
     @endforeach
   </tbody>

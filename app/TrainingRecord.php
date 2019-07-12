@@ -28,4 +28,9 @@ class TrainingRecord extends Model
     {
         return $this->belongsTo(TrainingSelect::class, 'training_select_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

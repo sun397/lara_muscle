@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\TrainingRecord;
 use App\TrainingSelect;
+use App\User;
 use Auth;
 
 class TrainingRecordController extends Controller
@@ -79,7 +80,10 @@ class TrainingRecordController extends Controller
      */
     public function edit($id)
     {
-        //
+        $selects = $this->select->all();
+        $record = $this->record->find($id);
+        return view('training_record.edit', compact('record', 'selects'));
+
     }
 
     /**
@@ -91,7 +95,9 @@ class TrainingRecordController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $input = $request->all();
+        $this->record->find($id)->fill($input)->save();
+        return redirect()->route('training_record.index');
     }
 
     /**
@@ -102,7 +108,8 @@ class TrainingRecordController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $this->record->find($id)->delete();
+        return redirect()->route('training_record.index');
     }
 
     /**
@@ -110,9 +117,10 @@ class TrainingRecordController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function myPage()
+    public function myPage($id)
     {
-        //
+        $records = $this->record->getByUserId($id);
+        return view('training_record.mypage', compact('records'));
     }
 
     /**
